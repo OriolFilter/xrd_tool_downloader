@@ -1,6 +1,6 @@
 # What this
 
-This is a mod (more like tools) managed for Xrd.
+This is a mod (more like tools) manager for Xrd.
 
 Main features are:
 
@@ -101,8 +101,15 @@ Just launch the binary then, it's my preferred method.
  
 > This assumes you have both, Python installed and the `pip` command.
 > 
+> - [How to install Git](https://www.python.org/downloads/)
 > - [How to install Python3](https://www.python.org/downloads/)
 > - [How to install PIP](https://pip.pypa.io/en/stable/installation/)
+
+### Clone the project
+
+```shell
+git clone https://github.com/OriolFilter/xrd_tool_downloader.git
+```
 
 ### Install/Update libraries/dependencies
 
@@ -120,7 +127,14 @@ python3 src/main.py
 
 ### Building
 
-Locate yourself within the 
+Locate yourself within the project directory, you should be at the same level as those directories.
+
+```text
+.
+├── binary_dump
+├── misc
+├── src
+```
 
 #### Linux
 
