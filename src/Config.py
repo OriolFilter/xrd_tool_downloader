@@ -273,7 +273,7 @@ class GlobalConfig:
         return True
 
     @property
-    def _win32_directory_path(self):
+    def xrd_win32_directory_path(self):
         """
         Path to the Xrd/Binaries/Win32 directory
         :return:

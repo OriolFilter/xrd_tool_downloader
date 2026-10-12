@@ -166,7 +166,7 @@ class AppStruct(AppPublic, ABC):
 
         :return:
         """
-        return self._config._win32_directory_path.joinpath(self.app_name.replace("/", "_"))
+        return self._config.xrd_win32_directory_path.joinpath(self.app_name.replace("/", "_"))
 
     async def download_version(self, version: str) -> bool:
         """# TODO IDK"""
@@ -282,7 +282,7 @@ class AppStruct(AppPublic, ABC):
         Returns the path of the Xrd launcher
         :return:
         """
-        return self._config._win32_directory_path.joinpath("xrd_executable_list.json")
+        return self._config.xrd_win32_directory_path.joinpath("xrd_executable_list.json")
 
 
 class GithubApp(AppStruct, ABC):
@@ -552,13 +552,13 @@ class InjectorApp(GithubApp, ABC):
         if self._startup_launcher_inject_dll_without_binary:
             this_app_values = {
                 "mod_name": self.app_name,
-                "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
+                "workdir": self._win32_mod_directory_path.relative_to(self._config.xrd_win32_directory_path).__str__(),
                 "dll_paths": [file for file in self._required_files if file.lower().endswith(".dll")]
             }
         else:
             this_app_values = {
                 "mod_name": self.app_name,
-                "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
+                "workdir": self._win32_mod_directory_path.relative_to(self._config.xrd_win32_directory_path).__str__(),
                 "executable_path": self._executable_name,
                 "arguments": self._launch_extra_args
             }
@@ -1009,7 +1009,7 @@ class BinaryThatStartsWithXrd(InjectorApp):
 
     @property
     def can_be_launched(self) -> bool:
-        return False
+        return True
 
     def _get_assets_whitelist(self, tag: str) -> [str]:
         return [self._executable_name]
@@ -1022,6 +1022,10 @@ class BinaryThatStartsWithXrd(InjectorApp):
     @abstractmethod
     def _executable_name(self) -> str:
         pass
+
+    @property
+    def current_version_files_path(self) -> Path:
+        return self._config.xrd_win32_directory_path
 
     @property
     def _is_installed(self) -> bool:
@@ -1104,7 +1108,7 @@ class BinaryThatStartsWithXrd(InjectorApp):
 
         :return:
         """
-        return self._config._win32_directory_path
+        return self._config.xrd_win32_directory_path
 
     @property
     def _key_dll(self) -> str:
