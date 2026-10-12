@@ -113,6 +113,8 @@ class WakeUpTool(InjectorApp):
 
 class ReplayTakeover(InjectorApp):
 
+    _startup_launcher_inject_dll_without_binary = True
+
     @property
     def _key_dll(self) -> str:
         return "GGXrdReplayTakeover.dll"
@@ -134,6 +136,8 @@ class ReplayTakeover(InjectorApp):
 
 
 class GGXrdDisplayPing(InjectorApp):
+
+    _startup_launcher_inject_dll_without_binary = True
 
     @property
     def _key_dll(self) -> str:
@@ -236,6 +240,8 @@ class GGXrdVersionSelector(InjectorApp):
 
 
 class HitboxOverlay(InjectorApp):
+
+    _startup_launcher_inject_dll_without_binary = True
     @property
     def _key_dll(self) -> str:
         return "ggxrd_hitbox_overlay.dll"
@@ -311,6 +317,9 @@ class HitboxOverlay(InjectorApp):
 
 
 class GGXrdFreeCam(InjectorApp):
+
+    _startup_launcher_inject_dll_without_binary = True
+
     @property
     def _key_dll(self) -> str:
         return "ggxrd_freecam_dll.dll"

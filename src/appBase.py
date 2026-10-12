@@ -446,6 +446,9 @@ class InjectorApp(GithubApp, ABC):
     Used by apps that require injection
     """
 
+    # Startup launcher inject the DLL directly without using a binary.
+    _startup_launcher_inject_dll_without_binary: bool = False
+
     @property
     def starts_at_boot(self) -> bool:
         # @property
@@ -524,12 +527,15 @@ class InjectorApp(GithubApp, ABC):
 
         # Copy exe and dll/files
         for file in self._required_files:
-            source_file_path = self.current_version_files_path.joinpath(file)
-            destination_file_path = self._win32_mod_directory_path.joinpath(file)
-            if source_file_path.exists() and source_file_path.is_file() and not destination_file_path.is_dir():
-                shutil.copy2(source_file_path, destination_file_path)
-            else:
-                raise Exception(f"File '{source_file_path}' couldn't be found.")
+            file: str
+            # Skip pasting .exe if not going to be used.
+            if self._startup_launcher_inject_dll_without_binary and not file.endswith(".exe"):
+                source_file_path = self.current_version_files_path.joinpath(file)
+                destination_file_path = self._win32_mod_directory_path.joinpath(file)
+                if source_file_path.exists() and source_file_path.is_file() and not destination_file_path.is_dir():
+                    shutil.copy2(source_file_path, destination_file_path)
+                else:
+                    raise Exception(f"File '{source_file_path}' couldn't be found.")
 
         # Create xrd_executable_list.json if doesn't exist
         xrd_launcher_json: Path = self._xrd_launcher_path
@@ -542,12 +548,20 @@ class InjectorApp(GithubApp, ABC):
         elif xrd_launcher_json.exists() and not xrd_launcher_json.is_file():
             raise Exception(f"Path {xrd_launcher_json} is occupied by something that's not a file.")
         # Load config
-        this_app_values = {
-            "mod_name": self.app_name,
-            "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
-            "executable_path": self._executable_name,
-            "arguments": self._launch_extra_args
-        }
+
+        if self._startup_launcher_inject_dll_without_binary:
+            this_app_values = {
+                "mod_name": self.app_name,
+                "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
+                "executable_path": self._executable_name,
+                "arguments": self._launch_extra_args
+            }
+        else:
+            this_app_values = {
+                "mod_name": self.app_name,
+                "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
+                "dll_paths": [file for file in self._key_dll]
+            }
 
         append_values = True
 
