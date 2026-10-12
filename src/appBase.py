@@ -495,8 +495,6 @@ class InjectorApp(GithubApp, ABC):
 
     def _disable_patch(self):
         """
-        Find self.bat in BootXRD.bat and comment it.
-
         This assumes that the file exists, contents are readable etc, checks are out of the scope of this function.
         :return:
         """
@@ -549,7 +547,7 @@ class InjectorApp(GithubApp, ABC):
             "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
             "executable_path": self._executable_name,
             "arguments": self._launch_extra_args,
-            "delay": 1  # TODO harcoded
+            "delay": 0  # TODO harcoded
         }
 
         append_values = True

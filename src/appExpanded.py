@@ -619,8 +619,7 @@ class BinaryThatStartsWithXrd(InjectorApp):
         Checks if the app.bat file is uncommented/ready
         :return:
         """
-        boot_xrd_bat = "BootGGXrd.bat"
-        boot_xrd_path = Path(self._config.xrd_path).joinpath(boot_xrd_bat)
+        boot_xrd_path = Path(self._config.xrd_path).joinpath("BootGGXrd.bat")
         with open(boot_xrd_path, 'r', encoding="utf-8") as boot_xrd_file:
             for line in boot_xrd_file.readlines():
                 if line.startswith(f"start /MIN {self._executable_name}"):
@@ -721,7 +720,11 @@ class BinaryThatStartsWithXrd(InjectorApp):
 
             # Append command
             if append_to_boot_xrd:
-                new_file_contents.append(f"{bat_command}\n")
+                if new_file_contents[-1] == "\n":
+                    new_file_contents.append(f"{bat_command}\n")
+                else:
+                    new_file_contents.append(f"\n{bat_command}\n")
+
 
         with open(boot_xrd_path, "w", encoding="utf-8") as file:
             file.writelines(new_file_contents)
