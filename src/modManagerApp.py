@@ -188,7 +188,7 @@ class ModManagerApp(App):
                         severity="warning")
             return 0
         elif not app.starts_at_boot:
-            if app.start_at_boot_requires_xrd_startup_launcher and not xrd_startup_launcher_app.starts_at_boot:
+            if app._start_at_boot_requires_xrd_startup_launcher and not xrd_startup_launcher_app.starts_at_boot:
                 self.notify(f"Patching App: {app.app_name} depends from app {xrd_startup_launcher_app.app_name} to be configured to start at boot.",
                             severity="warning")
             else:
@@ -247,9 +247,9 @@ class ModManagerApp(App):
             # loop.close()
 
             # Starts at Boot
-            if app.start_at_boot_requires_xrd_startup_launcher and xrd_startup_launcher_app.starts_at_boot:
+            if app._start_at_boot_requires_xrd_startup_launcher and xrd_startup_launcher_app.starts_at_boot:
                 starts_at_boot_bool = app.starts_at_boot
-            elif app.start_at_boot_requires_xrd_startup_launcher and not xrd_startup_launcher_app.starts_at_boot:
+            elif app._start_at_boot_requires_xrd_startup_launcher and not xrd_startup_launcher_app.starts_at_boot:
                 starts_at_boot_bool = False
             else:
                 starts_at_boot_bool = app.starts_at_boot

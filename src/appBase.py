@@ -28,7 +28,7 @@ class AppPublic(ABC):
     """
 
     downloadeable = True  # Default value. Disable for Binary patchers
-    start_at_boot_requires_xrd_startup_launcher = True
+    _start_at_boot_requires_xrd_startup_launcher = True
 
     @property
     @abstractmethod
@@ -952,7 +952,7 @@ class BinaryThatStartsWithXrd(InjectorApp):
     Binary that's only supposed to be launched when xrd starts.
     """
 
-    start_at_boot_requires_xrd_startup_launcher = False
+    _start_at_boot_requires_xrd_startup_launcher = False
 
     @property
     def _boot_xrd_enabled(self) -> bool:
