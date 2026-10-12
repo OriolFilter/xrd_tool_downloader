@@ -540,7 +540,7 @@ class InjectorApp(GithubApp, ABC):
             file: str
             # Skip pasting .exe if not going to be used.
             if (not self._startup_launcher_inject_dll_without_binary or
-                    (self.self._startup_launcher_inject_dll_without_binary and file.lower().endswith(".dll"))):
+                    (self._startup_launcher_inject_dll_without_binary and file.lower().endswith(".dll"))):
                 source_file_path = self.current_version_files_path.joinpath(file)
                 destination_file_path = self._win32_mod_directory_path.joinpath(file)
                 if source_file_path.exists() and source_file_path.is_file() and not destination_file_path.is_dir():

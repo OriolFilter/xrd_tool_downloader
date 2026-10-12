@@ -104,7 +104,7 @@ Just launch the binary then, it's my preferred method.
 > - [How to install Python3](https://www.python.org/downloads/)
 > - [How to install PIP](https://pip.pypa.io/en/stable/installation/)
 
-### Installing the libraries/dependencies
+### Install/Update libraries/dependencies
 
 ```shell
 pip3 install -r requirements.txt
