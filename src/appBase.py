@@ -19,7 +19,6 @@ from github import GitRelease
 import functions
 from exceptions import XrdNotRunning, WineLoaderNotFound, WinePrefixNotFound
 import json
-from re import sub as resub
 
 # from async_property import async_property
 
@@ -547,7 +546,7 @@ class InjectorApp(GithubApp, ABC):
         # Load config
         this_app_values = {
             "mod_name": self.app_name,
-            "workdir": resub('^' + self._config._win32_directory_path.__str__() + '/', '',  self._win32_mod_directory_path.__str__()),
+            "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
             "executable_path": self._executable_name,
             "arguments": self._launch_extra_args,
             "delay": 1  # TODO harcoded
