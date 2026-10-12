@@ -44,7 +44,7 @@ Yes.
 | [kkots/GGXrdMirrorColorSelect](https://github.com/kkots/GGXrdMirrorColorSelect/)                           | It makes use of a closer source executable, thus it's excluded from here. |
 | [kkots/GGXrdChangeBorderlessWindowPos](https://github.com/kkots/GGXrdChangeBorderlessWindowPos/)           | TODO                                                                      |
 | [kkots/GGXrdAutomaticallyChangeAudioDevice](https://github.com/kkots/GGXrdAutomaticallyChangeAudioDevice/) | TODO (the intend is to outsource Kkots)                                   |
-| PC Volt thing                                                                                              | TODO                                                                      |
+| [PCvolt/rev2-Labtool](https://github.com/PCvolt/rev2-Labtool)                                              | TODO                                                                      |
 
 ## How can I run it?
 
