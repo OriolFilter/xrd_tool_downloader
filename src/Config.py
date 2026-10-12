@@ -22,42 +22,49 @@ class GlobalConfig:
 
     def __init__(self):
         mod_list = [
-            DotNet(repo_owner="Microsoft", repo_name=".Net 6", _config=self,
-                   description="Required to launch the Reversal Tool"),
+
+            WakeUpTool(repo_name="rev2-wakeup-tool", repo_owner="kkots", _config=self,
+                       description="Core tool for training mode allowing to make the doomy take actions."),
+
+            ReplayTakeover(repo_name="GGXrdReplayTakeover", repo_owner="ibrow19", _config=self,
+                           description="Take control feature for Xrd replays system."),
 
             HitboxOverlay(repo_name="ggxrd_hitbox_overlay_2211",
                           repo_owner="kkots",
-                          description="Hitbox/framedata viewer mod",
+                          description="Hitbox/framedata viewer mod.",
                           _config=self),
-
-            WakeUpTool(repo_name="rev2-wakeup-tool", repo_owner="kkots", _config=self),
-
-            ReplayTakeover(repo_name="GGXrdReplayTakeover", repo_owner="ibrow19", _config=self),
 
             GGXrdFreeCam(repo_name="ggxrd_freecam", repo_owner="kkots",
                          _config=self, description="Camera free movement unlock mod.", ),
 
-            GGXrdDisplayPing(repo_name="GGXrdDisplayPing", repo_owner="kkots", _config=self,
-                             description="Display room's Ping"),
-
-            GGXrdVersionSelector(repo_name="GGXrdVersionSelector", repo_owner="kkots", _config=self),
-
             # WakeUpTool(repo_name="rev2-wakeup-tool", repo_owner="Iquis", _config=self), # Remove, probably
             # #Iquis would need to verify download differenlty
 
-            # AppStruct(repo_name="GGXrdFasterLoadingTimes", repo_owner="kkots", _config=self),
             # AppStruct(repo_name="GGXrdMirrorColorSelect", repo_owner="kkots", _config=self),
             # GGXrdChangeBorderlessWindowPos idk about this one
             # https://github.com/kkots/GGXrdAutomaticallyChangeAudioDevice
             # https://github.com/kkots/GGXrdAdjustConnectionTiers  idk about this one
 
-            # Binary Patchers
-            GGXrdBackgroundGamepad(repo_name="GGXrdBackgroundGamepad", repo_owner="kkots", _config=self),
-            GGXrdFasterLoadingTimes(repo_name="GGXrdFasterLoadingTimes", repo_owner="kkots", _config=self),
-            GGXrdStopResettingINITwiceAYear(repo_name="GGXrdStopResettingINITwiceAYear", repo_owner="kkots",
-                                            _config=self),
+            GGXrdVersionSelector(repo_name="GGXrdVersionSelector", repo_owner="kkots", _config=self,
+                                 description="You can select the Xrd patch version. This includes balance changes."),
 
-            XrdStartupLauncher(repo_name="xrd_startup_launcher", repo_owner="OriolFilter", _config=self)
+            GGXrdDisplayPing(repo_name="GGXrdDisplayPing", repo_owner="kkots", _config=self,
+                             description="Display room's Ping."),
+
+            XrdStartupLauncher(repo_name="xrd_startup_launcher", repo_owner="OriolFilter", _config=self,
+                               description="Some mods need it to be started when Xrd opens."),
+
+            GGXrdBackgroundGamepad(repo_name="GGXrdBackgroundGamepad", repo_owner="kkots", _config=self,
+                                   description="Allows the controller's focus not be lost if the active windows is no longer Xrd."),
+            GGXrdFasterLoadingTimes(repo_name="GGXrdFasterLoadingTimes", repo_owner="kkots", _config=self,
+                                    description="Reduce time when booting Xrd and getting faster into matches."),
+            GGXrdStopResettingINITwiceAYear(repo_name="GGXrdStopResettingINITwiceAYear", repo_owner="kkots",
+                                            _config=self,
+                                            description="Avoid having the .ini file restored when daylight savings "
+                                                        "apply."),
+
+            DotNet(repo_owner="Microsoft", repo_name=".Net 6", _config=self,
+                   description="Required to launch the Wakeup Tool"),
         ]
 
         match sys.platform:
@@ -69,11 +76,11 @@ class GlobalConfig:
                     # VsRedistribute only works for x64 devices
                     mod_list.append(
                         VsRedistributable64(repo_owner="Microsoft", repo_name="VsCppRedist_x64", _config=self,
-                                            description="Required to launch most mods."))
+                                            description="Required to launch some mods."))
                 # TODO Probably unused if x64 exists.
                 mod_list.append(
                     VsRedistributable86(repo_owner="Microsoft", repo_name="VsCppRedist_x86", _config=self,
-                                        description="Required to launch most mods."))
+                                        description="Required to launch some mods."))
             case _:
                 pass
 
