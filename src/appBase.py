@@ -546,8 +546,7 @@ class InjectorApp(GithubApp, ABC):
             "mod_name": self.app_name,
             "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
             "executable_path": self._executable_name,
-            "arguments": self._launch_extra_args,
-            "delay": 0  # TODO harcoded
+            "arguments": self._launch_extra_args
         }
 
         append_values = True
