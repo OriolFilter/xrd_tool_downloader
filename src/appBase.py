@@ -945,3 +945,173 @@ class XrdBinaryPatcher(AppStruct, abc.ABC):
         Each mod needs to implement their own version function.
         """
         pass
+
+
+class BinaryThatStartsWithXrd(InjectorApp):
+    """
+    Binary that's only supposed to be launched when xrd starts.
+    """
+
+    start_at_boot_requires_xrd_startup_launcher = False
+
+    @property
+    def _boot_xrd_enabled(self) -> bool:
+        """
+        Checks if the app.bat file is uncommented/ready
+        :return:
+        """
+        boot_xrd_path = Path(self._config.xrd_path).joinpath("BootGGXrd.bat")
+        with open(boot_xrd_path, 'r', encoding="utf-8") as boot_xrd_file:
+            for line in boot_xrd_file.readlines():
+                if line.startswith(f"start /MIN {self._executable_name}"):
+                    return True
+        return False
+
+    @property
+    def starts_at_boot(self) -> bool:
+        # @property
+        # @abstractmethod
+        # def starts_at_boot(self) -> bool:
+        """
+        Whether if mod/app is considered to start at Xrd boot.
+
+        If xrd_path is not populated/found forces a False.
+
+        Condition is (if "BootGGXrd.bat" is configured and files exist) return true/false.
+        :return:
+        """
+
+        return any(self._config.xrd_path) and (
+                (self._boot_xrd_enabled and self._required_files_exist) or self._is_binary_patched)
+
+    @property
+    def _required_files_exist(self) -> bool:
+        """
+        Check if the required files at the Xrd/Binaries/Win32 directory
+        :return:
+        """
+
+        # Check .bat exists
+        workdir = self._win32_mod_directory_path
+        if not (workdir.exists() and workdir.is_dir()):
+            return False
+
+        # Check files exist (we are not checking contents anyway)
+        for file in self._required_files:
+            file_path = workdir.joinpath(file)
+            if not (file_path.exists() and file_path.is_file()):
+                return False
+        for file in self._required_files:
+            file_path = self._win32_mod_directory_path.joinpath(file)
+            if not (file_path.exists() and file_path.is_file()):
+                return False
+        return True
+
+    @property
+    def can_be_launched(self) -> bool:
+        return False
+
+    def _get_assets_whitelist(self, tag: str) -> [str]:
+        return [self._executable_name]
+
+    @property
+    def _required_files(self) -> [str]:
+        return [self._executable_name]
+
+    @property
+    @abstractmethod
+    def _executable_name(self) -> str:
+        pass
+
+    @property
+    def _is_installed(self) -> bool:
+        """
+        :return: True if all files exists.
+        False if any is missing.
+        """
+
+        for file in self._required_files:
+            if not self.current_version_files_path.joinpath(file).is_file():
+                return False
+        return True
+
+    def _patch(self):
+        """
+        Append the start of the "BootGGXrd.bat" the .exe file to execute.
+        :return:
+        """
+
+        # Check BootGGXrd.bat
+        boot_xrd_path = Path(self._config.xrd_path).joinpath("BootGGXrd.bat")
+
+        new_file_contents: [str] = []
+        with open(boot_xrd_path, 'r', encoding="utf-8") as file:
+            # Skip if line exists (ie, when "upgrading/changing the version" of the mod.)
+            append_to_boot_xrd = True
+            bat_command = f"start /MIN {self._executable_name}"
+            for line in file:
+                if line.startswith(bat_command) or line.startswith(f"REM {bat_command}"):
+                    # If matched replace existing line
+                    # Matches both commented and uncommented
+                    new_file_contents.append(f"{bat_command}\n")
+                    append_to_boot_xrd = False
+                else:
+                    # If not matched/pass/keep the same contents
+                    new_file_contents.append(line)
+
+            # Append command
+            if append_to_boot_xrd:
+                if new_file_contents[-1] == "\n":
+                    new_file_contents.append(f"{bat_command}\n")
+                else:
+                    new_file_contents.append(f"\n{bat_command}\n")
+
+
+        with open(boot_xrd_path, "w", encoding="utf-8") as file:
+            file.writelines(new_file_contents)
+
+        # Copy exe and dll/files
+        for file in self._required_files:
+            source_file_path = self.current_version_files_path.joinpath(file)
+            destination_file_path = self._win32_mod_directory_path.joinpath(file)
+            if source_file_path.exists() and source_file_path.is_file() and not destination_file_path.is_dir():
+                shutil.copy2(source_file_path, destination_file_path)
+            else:
+                raise Exception(f"File '{source_file_path}' couldn't be found.")
+
+    def _disable_patch(self):
+        """
+        Find self startup line in BootXRD.bat and comment it.
+        :return:
+        """
+        boot_xrd_bat = "BootGGXrd.bat"
+        boot_xrd_path = Path(self._config.xrd_path).joinpath(boot_xrd_bat)
+        new_file_contents: [str] = []
+        with open(boot_xrd_path, 'r', encoding="utf-8") as file:
+            for line in file:
+                if line.startswith(f"start /MIN {self._executable_name}"):
+                    new_file_contents.append(f"REM start /MIN {self._executable_name}\n")
+                else:
+                    new_file_contents.append(line)
+
+        with open(boot_xrd_path, "w", encoding="utf-8") as file:
+            file.writelines(new_file_contents)
+
+    @property
+    def _win32_mod_directory_path(self) -> Path:
+        """
+        Returns the path for the Binaries/Win32/app_folder directory.
+
+        :return:
+        """
+        return self._config._win32_directory_path
+
+    @property
+    def _key_dll(self) -> str:
+        """
+        No DLL to keep track of
+        :return:
+        """
+        return ""
+
+    # TODO make launch possible, using the workdir from the Xrd Binary folder
