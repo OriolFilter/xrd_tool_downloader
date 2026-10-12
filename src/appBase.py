@@ -548,19 +548,18 @@ class InjectorApp(GithubApp, ABC):
         elif xrd_launcher_json.exists() and not xrd_launcher_json.is_file():
             raise Exception(f"Path {xrd_launcher_json} is occupied by something that's not a file.")
         # Load config
-
         if self._startup_launcher_inject_dll_without_binary:
             this_app_values = {
                 "mod_name": self.app_name,
                 "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
-                "executable_path": self._executable_name,
-                "arguments": self._launch_extra_args
+                "dll_paths": [file for file in self._required_files if file.lower().endswith(".dll")]
             }
         else:
             this_app_values = {
                 "mod_name": self.app_name,
                 "workdir": self._win32_mod_directory_path.relative_to(self._config._win32_directory_path).__str__(),
-                "dll_paths": [file for file in self._key_dll]
+                "executable_path": self._executable_name,
+                "arguments": self._launch_extra_args
             }
 
         append_values = True
