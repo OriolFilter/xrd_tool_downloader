@@ -491,9 +491,10 @@ class InjectorApp(GithubApp, ABC):
         :return:
         """
         for file in self._required_files:
-            file_path = self._win32_mod_directory_path.joinpath(file)
-            if not (file_path.exists() and file_path.is_file()):
-                return False
+            if self._startup_launcher_inject_dll_without_binary and not file.endswith(".exe"):
+                file_path = self._win32_mod_directory_path.joinpath(file)
+                if not (file_path.exists() and file_path.is_file()):
+                    return False
         return True
 
     def _disable_patch(self):
