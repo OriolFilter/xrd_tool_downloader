@@ -28,7 +28,7 @@ class AppPublic(ABC):
     """
 
     downloadeable = True  # Default value. Disable for Binary patchers
-    _start_at_boot_requires_xrd_startup_launcher = True
+    start_at_boot_requires_xrd_startup_launcher = True
 
     @property
     @abstractmethod
@@ -314,6 +314,14 @@ class GithubApp(AppStruct, ABC):
     #         self.__latest_release_available = self._config.github_client.get_repo(self.app_name).get_latest_release()
     #     return self.__latest_release_available
 
+    @property
+    async def is_up_to_date(self) -> bool:
+        if self.tag_name \
+                and self.tag_name == await self.get_latest_version_name():
+            # and self.latest_release \
+            return True
+        return False
+
     async def _get_latest_version_name(self) -> str:
         if not self._latest_version_name:
             import certifi
@@ -366,6 +374,7 @@ class GithubApp(AppStruct, ABC):
 
         new_release_files_path = Path(self._config.app_download_path).joinpath(
             self.app_name.replace("/", "_")).joinpath(tag_name)
+        # raise Exception(new_release_files_path)
         for asset in assets:
             if asset in assets_whitelist:
                 files_to_download.append(asset)
@@ -614,6 +623,14 @@ class InjectorApp(GithubApp, ABC):
             return True
         return False
 
+    @property
+    def launch_cwd_path(self) -> Path:
+        """
+        Which Path set as CWD when launching whatever.
+        :return:
+        """
+        return self.current_version_files_path.absolute()
+
     def launch(self) -> None:
         if self._is_injected:
             raise Exception("Cannot launch, the mod is already running/injected")
@@ -676,7 +693,7 @@ class InjectorApp(GithubApp, ABC):
                     stdin=None,
                     stdout=DEVNULL,
                     stderr=DEVNULL,
-                    cwd=self.current_version_files_path.absolute(),
+                    cwd=self.launch_cwd_path,
                     start_new_session=True,
                 )
             case "win32":
@@ -689,7 +706,7 @@ class InjectorApp(GithubApp, ABC):
                     stdin=None,
                     stdout=DEVNULL,
                     stderr=DEVNULL,
-                    cwd=self.current_version_files_path.absolute(),
+                    cwd=self.launch_cwd_path,
                     start_new_session=True,
                 )
             case _:
@@ -952,7 +969,7 @@ class BinaryThatStartsWithXrd(InjectorApp):
     Binary that's only supposed to be launched when xrd starts.
     """
 
-    _start_at_boot_requires_xrd_startup_launcher = False
+    start_at_boot_requires_xrd_startup_launcher = False
 
     @property
     def _boot_xrd_enabled(self) -> bool:
@@ -1022,10 +1039,6 @@ class BinaryThatStartsWithXrd(InjectorApp):
     @abstractmethod
     def _executable_name(self) -> str:
         pass
-
-    @property
-    def current_version_files_path(self) -> Path:
-        return self._config.xrd_win32_directory_path
 
     @property
     def _is_installed(self) -> bool:
@@ -1102,6 +1115,14 @@ class BinaryThatStartsWithXrd(InjectorApp):
             file.writelines(new_file_contents)
 
     @property
+    def _key_dll(self) -> str:
+        """
+        No DLL to keep track of
+        :return:
+        """
+        return ""
+
+    @property
     def _win32_mod_directory_path(self) -> Path:
         """
         Returns the path for the Binaries/Win32/app_folder directory.
@@ -1111,11 +1132,9 @@ class BinaryThatStartsWithXrd(InjectorApp):
         return self._config.xrd_win32_directory_path
 
     @property
-    def _key_dll(self) -> str:
+    def launch_cwd_path(self) -> Path:
         """
-        No DLL to keep track of
+        Will launch from the Binary/Win32 Xrd folder, so it uses the current startup configuration.
         :return:
         """
-        return ""
-
-    # TODO make launch possible, using the workdir from the Xrd Binary folder
+        return self._win32_mod_directory_path

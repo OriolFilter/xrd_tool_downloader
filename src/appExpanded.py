@@ -13,7 +13,7 @@ import psutil
 
 import functions
 from exceptions import XrdNotRunning, WineLoaderNotFound, WinePrefixNotFound
-from appBase import InjectorApp, StandAloneExeRequirement, GithubApp, XrdBinaryPatcher
+from appBase import InjectorApp, StandAloneExeRequirement, GithubApp, XrdBinaryPatcher, BinaryThatStartsWithXrd
 from FasterLoadingTimes.patch_unpatch import (patch as fasterLoadingTimes_patch,
                                               is_patched as fasterLoadingTimes_is_patched,
                                               unpatch as fasterLoadingTimes_unpatch)
@@ -112,7 +112,6 @@ class WakeUpTool(InjectorApp):
 
 
 class ReplayTakeover(InjectorApp):
-
     _startup_launcher_inject_dll_without_binary = True
 
     @property
@@ -136,7 +135,6 @@ class ReplayTakeover(InjectorApp):
 
 
 class GGXrdDisplayPing(InjectorApp):
-
     _startup_launcher_inject_dll_without_binary = True
 
     @property
@@ -240,8 +238,8 @@ class GGXrdVersionSelector(InjectorApp):
 
 
 class HitboxOverlay(InjectorApp):
-
     _startup_launcher_inject_dll_without_binary = True
+
     @property
     def _key_dll(self) -> str:
         return "ggxrd_hitbox_overlay.dll"
@@ -317,7 +315,6 @@ class HitboxOverlay(InjectorApp):
 
 
 class GGXrdFreeCam(InjectorApp):
-
     _startup_launcher_inject_dll_without_binary = True
 
     @property
@@ -613,6 +610,7 @@ class GGXrdStopResettingINITwiceAYear(XrdBinaryPatcher):
         xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         # TODO add a picker to select options/stuff
         stopResettingINITwiceAYear_patch(str(xrd_exe_path))
+
 
 class XrdStartupLauncher(BinaryThatStartsWithXrd):
     @property
