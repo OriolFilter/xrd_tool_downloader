@@ -26,7 +26,7 @@ Yes.
 | [kkots/GGXrdDisplayPing](https://github.com/kkots/GGXrdDisplayPing/)                               | Display room's Ping.                                                              |
 | [OriolFilter/xrd_startup_launcher](https://github.com/OriolFilter/xrd_startup_launcher/)           | Some mods need it to be started when Xrd opens.                                   |
 | [kkots/GGXrdBackgroundGamepad](https://github.com/kkots/GGXrdBackgroundGamepad/)                   | Allows the controller's focus not be lost if the active windows is no longer Xrd. |
-| [kkots/GGXrdFasterLoadingTimes](https://github.com/kkots/GGXrdBackgroundGamepad/)                  | Reduce time when booting Xrd and getting faster into matches.                     |
+| [kkots/GGXrdFasterLoadingTimes](https://github.com/kkots/GGXrdFasterLoadingTimes/)                  | Reduce time when booting Xrd and getting faster into matches.                     |
 | [kkots/GGXrdStopResettingINITwiceAYear](https://github.com/kkots/GGXrdStopResettingINITwiceAYear/) | Avoid having the .ini file restored when daylight savings apply.                  |
 
 ### Others/Misc
