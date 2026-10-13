@@ -13,7 +13,7 @@ import psutil
 
 import functions
 from exceptions import XrdNotRunning, WineLoaderNotFound, WinePrefixNotFound
-from appBase import InjectorApp, StandAloneExeRequirement, GithubApp, XrdBinaryPatcher
+from appBase import InjectorApp, StandAloneExeRequirement, GithubApp, XrdBinaryPatcher, BinaryThatStartsWithXrd
 from FasterLoadingTimes.patch_unpatch import (patch as fasterLoadingTimes_patch,
                                               is_patched as fasterLoadingTimes_is_patched,
                                               unpatch as fasterLoadingTimes_unpatch)
@@ -47,7 +47,7 @@ class GenericGithubApp(InjectorApp):
         raise NotImplementedError("_get_assets_whitelist for app {}".format(self.__class__))
 
 
-class WakeUpTool(InjectorApp, GithubApp):
+class WakeUpTool(InjectorApp):
 
     @property
     def _key_dll(self) -> str:
@@ -111,7 +111,8 @@ class WakeUpTool(InjectorApp, GithubApp):
         return False
 
 
-class ReplayTakeover(InjectorApp, GithubApp):
+class ReplayTakeover(InjectorApp):
+    _startup_launcher_inject_dll_without_binary = True
 
     @property
     def _key_dll(self) -> str:
@@ -133,7 +134,8 @@ class ReplayTakeover(InjectorApp, GithubApp):
         return assets_whitelist
 
 
-class GGXrdDisplayPing(InjectorApp, GithubApp):
+class GGXrdDisplayPing(InjectorApp):
+    _startup_launcher_inject_dll_without_binary = True
 
     @property
     def _key_dll(self) -> str:
@@ -189,7 +191,7 @@ class GGXrdDisplayPing(InjectorApp, GithubApp):
         return ["-force"]
 
 
-class GGXrdVersionSelector(InjectorApp, GithubApp):
+class GGXrdVersionSelector(InjectorApp):
 
     @property
     def _key_dll(self) -> str:
@@ -235,14 +237,16 @@ class GGXrdVersionSelector(InjectorApp, GithubApp):
         return assets_whitelist
 
 
-class HitboxOverlay(InjectorApp, GithubApp):
+class HitboxOverlay(InjectorApp):
+    _startup_launcher_inject_dll_without_binary = True
+
     @property
     def _key_dll(self) -> str:
         return "ggxrd_hitbox_overlay.dll"
 
     @property
     def _is_binary_patched(self) -> bool:
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         return functions.is_hitbox_overlay_patched(xrd_exe_path)
 
     def _unpatch_binary(self):
@@ -250,7 +254,7 @@ class HitboxOverlay(InjectorApp, GithubApp):
         # Prevent unpatch if version is less than 15
         # Windows doesn't allow to write a file if it's already open.
         # So... on Windows raise an error if Xrd is open.
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
 
         if sys.platform == 'win32':
             for pid in psutil.process_iter():
@@ -310,20 +314,22 @@ class HitboxOverlay(InjectorApp, GithubApp):
         return ["-force"]
 
 
-class GGXrdFreeCam(InjectorApp, GithubApp):
+class GGXrdFreeCam(InjectorApp):
+    _startup_launcher_inject_dll_without_binary = True
+
     @property
     def _key_dll(self) -> str:
         return "ggxrd_freecam_dll.dll"
 
     @property
     def _is_binary_patched(self) -> bool:
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         return functions.is_freecam_overlay_patched(xrd_exe_path)
 
     def _unpatch_binary(self):
         # Windows doesn't allow to write a file if it's already open.
         # So... on Windows raise an error if Xrd is open.
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
 
         if sys.platform == 'win32':
             for pid in psutil.process_iter():
@@ -541,7 +547,7 @@ class DotNet(StandAloneExeRequirement):
 
 class GGXrdBackgroundGamepad(XrdBinaryPatcher):
     def _disable_patch(self):
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         with open(xrd_exe_path, "r+b") as file:
             file.seek(0x947762)
             file.write(b'\x0f\x84\x0d\x12\x00\x00')
@@ -553,14 +559,14 @@ class GGXrdBackgroundGamepad(XrdBinaryPatcher):
             file.write(b'\x06')
 
     def _is_binary_patched(self) -> bool:
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         with open(xrd_exe_path, "rb") as file:
             file.seek(0x947762)
             is_patched = (file.read(6) == b'\x90\x90\x90\x90\x90\x90')
         return is_patched
 
     def _patch(self):
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         with open(xrd_exe_path, "r+b") as file:
             file.seek(0x947762)
             file.write(b'\x90\x90\x90\x90\x90\x90')
@@ -574,16 +580,16 @@ class GGXrdBackgroundGamepad(XrdBinaryPatcher):
 
 class GGXrdFasterLoadingTimes(XrdBinaryPatcher):
     def _disable_patch(self):
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         return fasterLoadingTimes_unpatch(guilty_gear_xrd_exe_path=str(xrd_exe_path),
                                           also_make_intro_cutscenes_unskippable=True)
 
     def _is_binary_patched(self) -> bool:
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         return fasterLoadingTimes_is_patched(str(xrd_exe_path))
 
     def _patch(self):
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         # TODO add a picker to select options/stuff
         fasterLoadingTimes_patch(guilty_gear_xrd_exe_path=str(xrd_exe_path),
                                  automash=True,
@@ -593,14 +599,20 @@ class GGXrdFasterLoadingTimes(XrdBinaryPatcher):
 
 class GGXrdStopResettingINITwiceAYear(XrdBinaryPatcher):
     def _disable_patch(self):
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         return stopResettingINITwiceAYear_unpatch(str(xrd_exe_path))
 
     def _is_binary_patched(self) -> bool:
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         return stopResettingINITwiceAYear_is_patched(str(xrd_exe_path))
 
     def _patch(self):
-        xrd_exe_path = Path(self._config.xrd_path).joinpath("Binaries/Win32/GuiltyGearXrd.exe")
+        xrd_exe_path = self._config.xrd_win32_directory_path.joinpath("GuiltyGearXrd.exe")
         # TODO add a picker to select options/stuff
         stopResettingINITwiceAYear_patch(str(xrd_exe_path))
+
+
+class XrdStartupLauncher(BinaryThatStartsWithXrd):
+    @property
+    def _executable_name(self) -> str:
+        return "xrd_startup_launcher.exe"
