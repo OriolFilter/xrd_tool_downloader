@@ -46,6 +46,10 @@ Yes.
 | [kkots/GGXrdAutomaticallyChangeAudioDevice](https://github.com/kkots/GGXrdAutomaticallyChangeAudioDevice/) | TODO (the intend is to outsource Kkots)                                   |
 | [PCvolt/rev2-Labtool](https://github.com/PCvolt/rev2-Labtool)                                              | TODO                                                                      |
 
+## How does it work?
+
+The mod will create a folder named downloads, on which will _download_ each mod.
+
 ## How can I run it?
 
 Check [here](https://github.com/OriolFilter/xrd_tool_downloader/releases/latest) for the latest update.
