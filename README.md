@@ -58,6 +58,8 @@ In tha path there will be the respective `downloads` directory.
 
 As well, a file named `config.json`, which is used to keep track of what's downloaded and to which version.
 
+Currently, every time the `update/download` function is used, it downloads all the version again.
+
 ## How can I run it?
 
 Check [here](https://github.com/OriolFilter/xrd_tool_downloader/releases/latest) for the latest update.
