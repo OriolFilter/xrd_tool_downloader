@@ -5,7 +5,7 @@ from github.GitRelease import GitRelease
 from rich.text import Text
 from textual import work
 from textual.app import App, ComposeResult, Binding
-from textual.widgets import DataTable, Footer
+from textual.widgets import DataTable, Footer, Header
 
 from Config import GlobalConfig
 from exceptions import XrdNotRunning
@@ -19,8 +19,11 @@ UNKNOWN = Text("?", style="#d8db23 bold")
 
 
 class ModManagerApp(App):
+    version: str = "1.1"
     config: GlobalConfig
     table: DataTable
+    tool_repo_owner = "OriolFilter"
+    tool_repo_name = "xrd_tool_downloader"
     # table_struct: {str: {str: str}} = None
 
     __column_fields: {str: str} = None
@@ -59,6 +62,7 @@ class ModManagerApp(App):
         super().__init__(*args, **kwargs)
 
     async def on_mount(self) -> None:
+        latest_tag = await self.latest_release_tag
 
         # self.table.zebra_stripes = True
         # self.cursor_type = "row"
@@ -80,6 +84,12 @@ class ModManagerApp(App):
             )
 
         await self.__update_set_values()
+
+
+        self.title = f"Xrd Mod/Tool Manager v{self.version}"
+        if latest_tag != self.version:
+            self.notify(f"New version of this tool found!\nCurrent version: {self.version}\nLatest stable: {latest_tag}",
+                        severity="warning", timeout=10)
 
     # def action_search_updates_app(self):
     #     pass
@@ -116,8 +126,9 @@ class ModManagerApp(App):
                                # cursor_background_priority="renderable"
                                )
         self.table.styles.min_height = 15
-        yield Footer()
 
+        yield Header()
+        yield Footer(show_command_palette=False)
         yield self.table
 
     def action_save_config(self) -> bool:
@@ -189,10 +200,11 @@ class ModManagerApp(App):
             return 0
         elif not app.starts_at_boot:
             if app.start_at_boot_requires_xrd_startup_launcher and not xrd_startup_launcher_app.starts_at_boot:
-                self.notify(f"Patching App: {app.app_name} depends from app {xrd_startup_launcher_app.app_name} to be configured to start at boot.",
-                            severity="warning")
+                self.notify(
+                    f"Patching App: {app.app_name} depends from app {xrd_startup_launcher_app.app_name} to be configured to start at boot.",
+                    severity="warning")
             else:
-                self.notify(f"Patching App: {app.app_name}",severity="warning")
+                self.notify(f"Patching App: {app.app_name}", severity="warning")
                 async with asyncio.TaskGroup() as tg:
                     patch = tg.create_task(app.patch())
 
@@ -271,3 +283,27 @@ class ModManagerApp(App):
                 else:
                     self.table.update_cell(value=Text(app_info.get(column) or UNKNOWN), row_key=row, column_key=column,
                                            update_width=True)
+
+    @property
+    async def latest_release_tag(self) -> bool:
+        import aiohttp
+        import certifi
+        import ssl
+
+        # Reduce number of .api. calls
+        latest_release_url = "https://github.com/{}/{}/releases/latest".format(self.tool_repo_owner,
+                                                                               self.tool_repo_name)
+        tag_url = "https://github.com/{}/{}/releases/tag/".format(self.tool_repo_owner, self.tool_repo_name)
+
+        # Aiohttp can sometimes fail to very certs so this passes the device allowed certs issuers
+        sslcontext = ssl.create_default_context(cafile=certifi.where())
+
+        async with aiohttp.ClientSession() as session:
+            async with session.head(latest_release_url, timeout=5, ssl=sslcontext) as resp:
+                latest_url = resp.headers.get("Location")
+                if resp.status and any(latest_url) and latest_url.startswith(tag_url):
+                    latest_tag = latest_url.removeprefix(
+                        tag_url)
+                    if latest_tag:
+                        return latest_tag
+        return "?????"
