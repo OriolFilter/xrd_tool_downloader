@@ -106,14 +106,19 @@ class GlobalConfig:
         return self.get_app("OriolFilter/xrd_startup_launcher")
 
     @property
-    def workdir(self) -> str:
-        # return "/tmp/a"
-        return os.getcwd()
+    def app_workdir(self) -> Path:
+        match sys.platform:
+            case 'linux':
+                return Path(os.environ.get("HOME")).joinpath("xrd_tool_downloader")
+            case "win32":
+                return Path(os.environ.get("LOCALAPPDATA")).joinpath("xrd_tool_downloader")
+            case _:
+                raise NotImplementedError(f"OS {sys.platform} is currently not implemented. Reach out to the "
+                                          f"maintainer/create a github issue so we can be aware of your platform.")
 
     @property
-    def config_file_path(self):
-        return f"{self.workdir}/config.json"
-        # return f"{self.workdir}/config.json"
+    def config_file_path(self) -> Path:
+        return self.app_workdir.joinpath("config.json")
 
     def load_config(self) -> bool:
         # Load default -> Merge differences
@@ -168,8 +173,15 @@ class GlobalConfig:
         return True
 
     @property
-    def app_download_path(self) -> str:
-        return f"{self.workdir}/downloads"
+    def app_download_path(self) -> Path:
+        match sys.platform:
+            case 'linux':
+                return Path(os.environ.get("HOME")).joinpath("xrd_tool_downloader", "downloads")
+            case "win32":
+                return Path(os.environ.get("LOCALAPPDATA")).joinpath("xrd_tool_downloader", "downloads")
+            case _:
+                raise NotImplementedError(f"OS {sys.platform} is currently not implemented. Reach out to the "
+                                          f"maintainer/create a github issue so we can be aware of your platform.")
 
     @staticmethod
     def __find_xrd_location_if_open() -> str:
