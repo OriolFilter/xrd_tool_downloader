@@ -268,7 +268,7 @@ class HitboxOverlay(InjectorApp):
         return [
             self._executable_name,
             self._key_dll,
-            "ggxrd_hitbox_overlay.ini"
+            # "ggxrd_hitbox_overlay.ini"
         ]
 
     @property
@@ -343,7 +343,7 @@ class GGXrdFreeCam(InjectorApp):
         return [
             self._executable_name,
             self._key_dll,
-            "ggxrd_freecam.ini"
+            # "ggxrd_freecam.ini"
         ]
 
     @property
