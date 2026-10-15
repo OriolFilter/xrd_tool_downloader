@@ -123,7 +123,7 @@ class GlobalConfig:
     def load_config(self) -> bool:
         # Load default -> Merge differences
         # If exists -> load
-        if os.path.exists(self.config_file_path) and os.path.isfile(self.config_file_path):
+        if self.config_file_path.exists() and self.config_file_path.is_file():
             # For app -> check if config says something and import fields
             user_config: {str: str | {str: str}} = {}
             mods_info: {str: {str: str}} = {}
@@ -174,14 +174,7 @@ class GlobalConfig:
 
     @property
     def app_download_path(self) -> Path:
-        match sys.platform:
-            case 'linux':
-                return Path(os.environ.get("HOME")).joinpath("xrd_tool_downloader", "downloads")
-            case "win32":
-                return Path(os.environ.get("LOCALAPPDATA")).joinpath("xrd_tool_downloader", "downloads")
-            case _:
-                raise NotImplementedError(f"OS {sys.platform} is currently not implemented. Reach out to the "
-                                          f"maintainer/create a github issue so we can be aware of your platform.")
+        return self.app_workdir.joinpath("downloads")
 
     @staticmethod
     def __find_xrd_location_if_open() -> str:

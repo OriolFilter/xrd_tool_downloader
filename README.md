@@ -16,18 +16,18 @@ Yes.
 
 ## Currently configured mods/tools.
 
-| Name                                                                                               | Notes                                                                             |
-|----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
-| [kkots/rev2-wakeup-tool](https://github.com/kkots/rev2-wakeup-tool/)                               | Core tool for training mode allowing to make the doomy take actions.              |
-| [ibrow19/GGXrdReplayTakeover](https://github.com/ibrow19/GGXrdReplayTakeover/)                     | Take control feature for Xrd replays system.                                      |
-| [kkots/ggxrd_hitbox_overlay_2211](https://github.com/kkots/ggxrd_hitbox_overlay_2211/)             | Hitbox/framedata viewer mod.                                                      |
-| [kkots/ggxrd_freecam](https://github.com/kkots/ggxrd_freecam/)                                     | Camera free movement unlock mod.                                                  |
-| [kkots/GGXrdVersionSelector](https://github.com/kkots/GGXrdVersionSelector/)                       | You can select the Xrd patch version. This includes balance changes.              |
-| [kkots/GGXrdDisplayPing](https://github.com/kkots/GGXrdDisplayPing/)                               | Display room's Ping.                                                              |
-| [OriolFilter/xrd_startup_launcher](https://github.com/OriolFilter/xrd_startup_launcher/)           | Some mods need it to be started when Xrd opens.                                   |
-| [kkots/GGXrdBackgroundGamepad](https://github.com/kkots/GGXrdBackgroundGamepad/)                   | Allows the controller's focus not be lost if the active windows is no longer Xrd. |
-| [kkots/GGXrdFasterLoadingTimes](https://github.com/kkots/GGXrdFasterLoadingTimes/)                  | Reduce time when booting Xrd and getting faster into matches.                     |
-| [kkots/GGXrdStopResettingINITwiceAYear](https://github.com/kkots/GGXrdStopResettingINITwiceAYear/) | Avoid having the .ini file restored when daylight savings apply.                  |
+| Name                                                                                               | Notes                                                                                                                                    |
+|----------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| [kkots/rev2-wakeup-tool](https://github.com/kkots/rev2-wakeup-tool/)                               | Core tool for training mode allowing to make the doomy take actions.                                                                     |
+| [ibrow19/GGXrdReplayTakeover](https://github.com/ibrow19/GGXrdReplayTakeover/)                     | Take control feature for Xrd replays system.                                                                                             |
+| [kkots/ggxrd_hitbox_overlay_2211](https://github.com/kkots/ggxrd_hitbox_overlay_2211/)             | Hitbox/framedata viewer mod.                                                                                                             |
+| [kkots/ggxrd_freecam](https://github.com/kkots/ggxrd_freecam/)                                     | Camera free movement unlock mod.                                                                                                         |
+| [kkots/GGXrdVersionSelector](https://github.com/kkots/GGXrdVersionSelector/)                       | You can select the Xrd patch version. This includes balance changes.                                                                     |
+| [kkots/GGXrdDisplayPing](https://github.com/kkots/GGXrdDisplayPing/)                               | Display room's Ping.                                                                                                                     |
+| [OriolFilter/xrd_startup_launcher](https://github.com/OriolFilter/xrd_startup_launcher/)           | Some mods need it to be started when Xrd opens.                                                                                          |
+| [kkots/GGXrdBackgroundGamepad](https://github.com/kkots/GGXrdBackgroundGamepad/)                   | Allows the controller's focus not be lost if the active windows is no longer Xrd.                                                        |
+| [kkots/GGXrdFasterLoadingTimes](https://github.com/kkots/GGXrdFasterLoadingTimes/)                 | Reduce time when booting Xrd and getting faster into matches. The OG mod allows for some settings, this one has hardcoded values fornow. |
+| [kkots/GGXrdStopResettingINITwiceAYear](https://github.com/kkots/GGXrdStopResettingINITwiceAYear/) | Avoid having the .ini file restored when daylight savings apply.                                                                         |
 
 ### Others/Misc
 
@@ -48,7 +48,15 @@ Yes.
 
 ## How does it work?
 
-The mod will create a folder named downloads, on which will _download_ each mod.
+The mod will create a directory named downloads, on which will _download_ each mod.
+
+On Windows is stored in `%LOCALAPPDATA%/xrd_tool_downloader`.
+
+On Linux is `$HOME/xrd_tool_downloader`.
+
+In tha path there will be the respective `downloads` directory.
+
+As well, a file named `config.json`, which is used to keep track of what's downloaded and to which version.
 
 ## How can I run it?
 
