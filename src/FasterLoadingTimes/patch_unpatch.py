@@ -1694,7 +1694,7 @@ def patch(guilty_gear_xrd_exe_path: str, automash: bool, intro_movies_skip_mode:
             if os.path.isfile(movie_path_from):
                 if debug:
                     print("Renaming Splash_Steam.wmv to Splash_Steam_.wmv.")
-                os.rename(movie_path_from, movie_path_to)
+                os.replace(movie_path_from, movie_path_to)
             elif debug:
                 print("Splash_Steam.wmv not found.")
 

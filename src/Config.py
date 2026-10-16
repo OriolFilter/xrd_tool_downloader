@@ -106,19 +106,24 @@ class GlobalConfig:
         return self.get_app("OriolFilter/xrd_startup_launcher")
 
     @property
-    def workdir(self) -> str:
-        # return "/tmp/a"
-        return os.getcwd()
+    def app_workdir(self) -> Path:
+        match sys.platform:
+            case 'linux':
+                return Path(os.environ.get("HOME")).joinpath("xrd_tool_downloader")
+            case "win32":
+                return Path(os.environ.get("LOCALAPPDATA")).joinpath("xrd_tool_downloader")
+            case _:
+                raise NotImplementedError(f"OS {sys.platform} is currently not implemented. Reach out to the "
+                                          f"maintainer/create a github issue so we can be aware of your platform.")
 
     @property
-    def config_file_path(self):
-        return f"{self.workdir}/config.json"
-        # return f"{self.workdir}/config.json"
+    def config_file_path(self) -> Path:
+        return self.app_workdir.joinpath("config.json")
 
     def load_config(self) -> bool:
         # Load default -> Merge differences
         # If exists -> load
-        if os.path.exists(self.config_file_path) and os.path.isfile(self.config_file_path):
+        if self.config_file_path.exists() and self.config_file_path.is_file():
             # For app -> check if config says something and import fields
             user_config: {str: str | {str: str}} = {}
             mods_info: {str: {str: str}} = {}
@@ -163,13 +168,18 @@ class GlobalConfig:
         config_dict["xrd_path"] = self.xrd_path
         # raise Exception(config_dict)
         # Write / Save
+        if not self.app_workdir.exists():
+            os.makedirs(self.app_workdir, exist_ok=True)
+        elif self.app_workdir.is_file():
+            raise Exception("Path {} is occupied by a file, thus cannot create this app directory to store stuff.".
+                            format(self.app_workdir))
         with open(self.config_file_path, 'w+', encoding="utf-8") as file:
             file.write(json.dumps(config_dict))
         return True
 
     @property
-    def app_download_path(self) -> str:
-        return f"{self.workdir}/downloads"
+    def app_download_path(self) -> Path:
+        return self.app_workdir.joinpath("downloads")
 
     @staticmethod
     def __find_xrd_location_if_open() -> str:

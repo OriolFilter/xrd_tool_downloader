@@ -266,7 +266,7 @@ class AppStruct(AppPublic, ABC):
 
     @property
     def current_version_files_path(self) -> Path:
-        return Path(self._config.app_download_path).joinpath(self.app_name.replace("/", "_")).joinpath(self.tag_name)
+        return self._config.app_download_path.joinpath(self.app_name.replace("/", "_")).joinpath(self.tag_name)
 
     @property
     def _xrd_launcher_configured_apps(self) -> [{str: str}]:
@@ -372,7 +372,7 @@ class GithubApp(AppStruct, ABC):
         files_to_download: [str] = []
         assets_whitelist = self.get_assets_whitelist(tag=tag_name)
 
-        new_release_files_path = Path(self._config.app_download_path).joinpath(
+        new_release_files_path: Path = self._config.app_download_path.joinpath(
             self.app_name.replace("/", "_")).joinpath(tag_name)
         # raise Exception(new_release_files_path)
         for asset in assets:
@@ -391,12 +391,11 @@ class GithubApp(AppStruct, ABC):
             )
 
         # Check download folder exists
-        if not os.path.exists(path=new_release_files_path):
+        if not new_release_files_path.exists():
             os.makedirs(new_release_files_path, exist_ok=True)
         elif not os.path.isdir(new_release_files_path):
-            raise Exception("Downloads path ({}) is occupied by a file".format(new_release_files_path))
+            raise Exception("Downloads directory ({}) is occupied by a file".format(new_release_files_path))
 
-        import io
         for asset in files_to_download:
             async with aiohttp.ClientSession() as session:
                 async with session.get(f'{self.get_repo_releases_url()}/download/{tag_name}/{asset}', timeout=5,
@@ -854,7 +853,7 @@ class StandAloneExeRequirement(InjectorApp, ABC):
         :return:
         """
 
-        return Path(self._config.app_download_path).joinpath(self.app_name.replace("/", "_"))
+        return self._config.app_download_path.joinpath(self.app_name.replace("/", "_"))
 
     def _patch(self):
         # IDK if I should be passing the extra args but
