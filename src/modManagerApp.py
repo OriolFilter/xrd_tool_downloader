@@ -19,7 +19,7 @@ UNKNOWN = Text("?", style="#d8db23 bold")
 
 
 class ModManagerApp(App):
-    version: str = "1.1"
+    version: str = "1.1-dev"
     config: GlobalConfig
     table: DataTable
     tool_repo_owner = "OriolFilter"
