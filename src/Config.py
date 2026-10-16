@@ -168,6 +168,11 @@ class GlobalConfig:
         config_dict["xrd_path"] = self.xrd_path
         # raise Exception(config_dict)
         # Write / Save
+        if not self.app_workdir.exists():
+            os.makedirs(self.app_workdir, exist_ok=True)
+        elif self.app_workdir.is_file():
+            raise Exception("Path {} is occupied by a file, thus cannot create this app directory to store stuff.".
+                            format(self.app_workdir))
         with open(self.config_file_path, 'w+', encoding="utf-8") as file:
             file.write(json.dumps(config_dict))
         return True

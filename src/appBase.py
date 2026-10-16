@@ -372,7 +372,7 @@ class GithubApp(AppStruct, ABC):
         files_to_download: [str] = []
         assets_whitelist = self.get_assets_whitelist(tag=tag_name)
 
-        new_release_files_path = self._config.app_download_path.joinpath(
+        new_release_files_path: Path = self._config.app_download_path.joinpath(
             self.app_name.replace("/", "_")).joinpath(tag_name)
         # raise Exception(new_release_files_path)
         for asset in assets:
@@ -391,7 +391,7 @@ class GithubApp(AppStruct, ABC):
             )
 
         # Check download folder exists
-        if not os.path.exists(path=new_release_files_path):
+        if not new_release_files_path.exists():
             os.makedirs(new_release_files_path, exist_ok=True)
         elif not os.path.isdir(new_release_files_path):
             raise Exception("Downloads directory ({}) is occupied by a file".format(new_release_files_path))
